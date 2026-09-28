@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import hello_world
+from .views import hello_world, suggest_devices, receive_json
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('helloworld/', hello_world, name='helloworld'),
+    path('suggest/', suggest_devices, name='suggest_devices'),
+    path("receive-json/", receive_json, name="receive_json"),
 ]
