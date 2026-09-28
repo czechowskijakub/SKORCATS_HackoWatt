@@ -1,5 +1,7 @@
 class CheckboxGetter:
-    
+    def __init__(self):
+        self.devices = {}
+
     @staticmethod
     def _to_bool(value):
         if isinstance(value, bool):
@@ -16,7 +18,8 @@ class CheckboxGetter:
         if not isinstance(data, dict):
             raise TypeError('data must be a dict containing checkbox names and values')
 
-        return {str(key): self._to_bool(value) for key, value in data.items()}
+        self.devices = {str(key): self._to_bool(value) for key, value in data.items()}
+        return self.devices
 
     def collect_from_list(self, items, all_items=None):
         if not isinstance(items, list):
@@ -24,22 +27,39 @@ class CheckboxGetter:
 
         selected = {str(item) for item in items}
         if all_items is None:
-            return {str(item): item in selected for item in selected}
+            self.devices = {str(item): item in selected for item in selected}
+            return self.devices
 
-        return {str(item): str(item) in selected for item in all_items}
+        self.devices = {str(item): str(item) in selected for item in all_items}
+        return self.devices
 
     def from_request(self, request):
         if hasattr(request, 'POST'):
-            return self.collect_from_dict(dict(request.POST))
+            self.devices = self.collect_from_dict(dict(request.POST))
+            return self.devices
 
         if hasattr(request, 'data'):
-            return self.collect_from_dict(request.data)
+            self.devices = self.collect_from_dict(request.data)
+            return self.devices
 
         raise TypeError('request must provide POST or data payload')
 
     def normalize(self, data):
         if isinstance(data, dict):
-            return self.collect_from_dict(data)
+            self.devices = self.collect_from_dict(data)
+            return self.devices
         if isinstance(data, list):
-            return self.collect_from_list(data)
+            self.devices = self.collect_from_list(data)
+            return self.devices
         raise TypeError('Unsupported checkbox payload type')
+
+    def get_devices(self):
+        return self.devices
+
+    def set_devices(self, data):
+        self.devices = self.collect_from_dict(data)
+        return self.devices
+
+    def clear_devices(self):
+        self.devices = {}
+        return self.devices

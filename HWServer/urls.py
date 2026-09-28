@@ -16,11 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import hello_world, suggest_devices, receive_json
+from .views import hello_world, receive_json, graph_data, weather_data
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('helloworld/', hello_world, name='helloworld'),
-    path('suggest/', suggest_devices, name='suggest_devices'),
-    path("receive-json/", receive_json, name="receive_json"),
+    path('receive-json', receive_json, name='receive_json_no_slash'),
+    path('receive-json/', receive_json, name='receive_json'),
+    path('receive_json', receive_json, name='receive_json_legacy_no_slash'),
+    path('receive_json/', receive_json, name='receive_json_legacy'),
+    path('graph-data', graph_data, name='graph_data_no_slash'),
+    path('graph-data/', graph_data, name='graph_data'),
+    path('weather-data', weather_data, name='weather_graph_data_no_slash'),
+    path('weather-data/', weather_data, name='weather_graph_data'),
 ]
