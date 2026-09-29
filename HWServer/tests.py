@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase
 
+from HWServer.utils.device_usage import DevicesConsumption
 from HWServer.utils.suggester import Suggester
 
 
@@ -22,3 +23,24 @@ class SuggesterTests(SimpleTestCase):
 
         self.assertEqual(advice['status'], 'increase')
         self.assertIn('możesz', advice['message'])
+
+
+class DevicesConsumptionTests(SimpleTestCase):
+    def test_toggle_updates_only_the_submitted_device(self):
+        consumption = DevicesConsumption()
+        consumption.populate_map()
+
+        device_map = consumption.update_map(
+            {'kettle': True},
+            {'kettle': 12.5},
+        )
+
+        self.assertEqual(device_map['kettle'], 12.5)
+        self.assertEqual(device_map['fridge'], 0)
+
+        device_map = consumption.update_map(
+            {'kettle': False},
+            {'kettle': 12.5},
+        )
+
+        self.assertEqual(device_map['kettle'], 0)

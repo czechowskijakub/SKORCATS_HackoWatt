@@ -7,6 +7,11 @@ from HWServer.utils.checkbox_getter import CheckboxGetter
 from HWServer.utils.timestamps_graph import TimestampsGraph
 from HWServer.utils.weather_graph import WeatherGraph
 from HWServer.utils.thresholds import Thresholds
+from HWServer.utils.device_usage import DevicesConsumption
+
+
+device_consumption = DevicesConsumption()
+device_consumption.populate_map()
 
 
 @csrf_exempt
@@ -34,10 +39,16 @@ def receive_json(request):
 
     normalized_devices = CheckboxGetter().collect_from_dict(payload)
     print("Normalized devices:", normalized_devices)
+    consumption_by_device = device_consumption.evaluate(save_profile=False)
+    device_map = device_consumption.update_map(
+        normalized_devices,
+        consumption_by_device,
+    )
 
     response = JsonResponse({
         "status": "ok",
-        "devices": normalized_devices
+        "devices": normalized_devices,
+        "device_map": device_map,
     })
     response["Access-Control-Allow-Origin"] = "*"
     response["Access-Control-Allow-Headers"] = "Content-Type, X-CSRFToken"
